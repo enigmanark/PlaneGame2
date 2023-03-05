@@ -17,6 +17,9 @@ proc NewEnemy*(x : float, y : float, speed : float, path : string, gameHeight : 
     enemy.alive = true
     return enemy
 
+proc Clean*(self : var Enemy) =
+    unloadTexture(self.texture)
+
 proc Update*(self : var Enemy, delta : float) =
     self.position.y += 1 * self.speed * delta
     if self.position.y > self.gameHeight:

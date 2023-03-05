@@ -4,6 +4,7 @@ import sprite as Sprite
 import map as Map
 import bullet as Bullet
 import enemy as Enemy
+import std/random
 
 type Level* = ref object of RootObj
     gameWidth : float
@@ -11,7 +12,9 @@ type Level* = ref object of RootObj
     player : Player
     map : Map
     mapB : Map
-    test_enemy : Enemy
+    enemies : seq[Enemy]
+    enemy_spawn_timer : float
+    enemy_spawn_delay : float
 
 proc Draw*(self : Level) =
     self.map.Draw()
@@ -19,7 +22,8 @@ proc Draw*(self : Level) =
     for b in self.player.bullets.items:
         b.Draw()
     self.player.Draw()
-    self.test_enemy.Draw()
+    for e in self.enemies.items:
+        e.Draw()
 
 proc Update*(self : var Level, delta : float) =
     self.player.Update(delta)
@@ -37,9 +41,26 @@ proc Update*(self : var Level, delta : float) =
     for b in self.player.bullets.mitems:
         b.Update(delta)
 
-    self.test_enemy.Update(delta)
+    for e in self.enemies.mitems:
+        e.Update(delta)
+
+    self.enemy_spawn_timer += delta
+    if self.enemy_spawn_timer >= self.enemy_spawn_delay:
+        self.enemy_spawn_timer = 0f
+        let ex = rand(16..int(self.gameWidth)-16)
+        let ey = 0-16
+        self.enemies.add(NewEnemy(float(ex), float(ey), 50, "res/plane_2.png", self.gameHeight))
+
+    var clean_enemy_seq : seq[Enemy]
+    for e in self.enemies.mitems:
+        if e.alive:
+            clean_enemy_seq.add(e)
+        else:
+            e.Clean()
+    self.enemies = clean_enemy_seq
 
 proc NewLevel*(gameWidth : float, gameHeight : float) : Level =
+    randomize()
     var level = Level()
 
     level.gameWidth = gameWidth
@@ -57,5 +78,6 @@ proc NewLevel*(gameWidth : float, gameHeight : float) : Level =
     level.mapB.Generate(30, 17, gameWidth, gameHeight)
     level.mapB.position.y = level.map.position.y - (float(level.mapB.height) * float(level.mapB.tile_size))
 
-    level.test_enemy = NewEnemy(50, 0, 50, "res/plane_2.png", gameHeight)
+    level.enemy_spawn_delay = 0.7
+    level.enemy_spawn_timer = 0f
     return level
