@@ -73,7 +73,9 @@ proc Render(self : var Engine) =
     self.player.Draw()
     endMode2D()
 
-    drawText("FPS: " & $getFPS(), 10, 10, 30, Black)
+    let fps = getFPS()
+    let fpsText : string = $fps
+    drawText(cstring("FPS: " & fpsText), 10, 10, 30, Black)
     endDrawing()
 
 proc Run*(self : var Engine) =
