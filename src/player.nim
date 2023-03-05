@@ -7,6 +7,7 @@ type Player* = ref object of Sprite
     fire_delay : float
     fire_timer : float
     can_fire : bool
+    score : int
 
 proc NewPlayer*(x : float, y : float, speed : float, path : string) : Player =
     var player = Player()
@@ -19,8 +20,14 @@ proc NewPlayer*(x : float, y : float, speed : float, path : string) : Player =
     player.can_fire = true
     player.fire_delay = 0.25
     player.fire_timer = 0f
-
+    player.score = 0
     return player
+
+proc GetScore*(self : Player) : int =
+    return self.score
+
+proc AddScore*(self : var Player, sc : int) =
+    self.score += sc
 
 proc Update*(self : var Player, delta : float) =
     if not self.can_fire:

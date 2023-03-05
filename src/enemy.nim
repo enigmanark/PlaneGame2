@@ -8,8 +8,9 @@ type Enemy* = ref object of Sprite
     flash_timer : float
     flash_delay : float
     hp : int
+    score : int
 
-proc NewEnemy*(x : float, y : float, speed : float, path : string, gameHeight : float, hp : int) : Enemy =
+proc NewEnemy*(x : float, y : float, speed : float, path : string, gameHeight : float, hp : int, score : int) : Enemy =
     var enemy = Enemy()
     enemy.speed = speed
     enemy.position = Vector2()
@@ -21,13 +22,20 @@ proc NewEnemy*(x : float, y : float, speed : float, path : string, gameHeight : 
     enemy.alive = true
     enemy.flash_delay = 0.1
     enemy.hp = hp
+    enemy.score = score
     return enemy
 
-proc TakeDamage*(self : var Enemy) =
+proc GetScore*(self : Enemy) : int =
+    return self.score
+
+proc TakeDamage*(self : var Enemy) : bool =
     self.flashing = true
     self.hp -= 1
     if self.hp <= 0:
         self.alive = false
+        return true
+    else:
+        return false
 
 proc Clean*(self : var Enemy) =
     unloadTexture(self.texture)

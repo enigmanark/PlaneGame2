@@ -46,7 +46,9 @@ proc Render(self : var Engine) =
 
     let fps = getFPS()
     let fpsText : string = $fps
-    drawText(cstring("FPS: " & fpsText), 10, 10, 30, Black)
+    drawText(cstring("FPS: " & fpsText), 10, 10, 22, WHITE)
+    let sct = $self.level.GetPlayerSore()
+    drawText(cstring("Score: " & sct), 10, 40, 22, WHITE)
     endDrawing()
 
 proc Run*(self : var Engine) =
