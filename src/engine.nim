@@ -14,7 +14,7 @@ type
 
 proc NewEngine*(ww : int, wh : int, t : string) : Engine =
     var engine = Engine()
-    engine.camera_zoom = 3
+    engine.camera_zoom = 2.5
     engine.camera = Camera2D()
     engine.camera.zoom = engine.camera_zoom
     engine.windowWidth = ww

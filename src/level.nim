@@ -47,9 +47,17 @@ proc Update*(self : var Level, delta : float) =
     self.enemy_spawn_timer += delta
     if self.enemy_spawn_timer >= self.enemy_spawn_delay:
         self.enemy_spawn_timer = 0f
+        let et = rand(1..4)
         let ex = rand(16..int(self.gameWidth)-16)
         let ey = 0-16
-        self.enemies.add(NewEnemy(float(ex), float(ey), 50, "res/plane_2.png", self.gameHeight))
+        if et == 1:
+            self.enemies.add(NewEnemy(float(ex), float(ey), 42, "res/plane_2.png", self.gameHeight))
+        elif et == 2:
+            self.enemies.add(NewEnemy(float(ex), float(ey), 37, "res/plane_4.png", self.gameHeight))
+        elif et == 3:
+            self.enemies.add(NewEnemy(float(ex), float(ey), 55, "res/plane_5.png", self.gameHeight))
+        else:
+            self.enemies.add(NewEnemy(float(ex), float(ey), 30, "res/plane_3.png", self.gameHeight))
 
     var clean_enemy_seq : seq[Enemy]
     for e in self.enemies.mitems:
@@ -74,18 +82,22 @@ proc NewLevel*(gameWidth : float, gameHeight : float) : Level =
     level.gameWidth = gameWidth
     level.gameHeight = gameHeight
 
+    let t_size = 16
+    let width = 32
+    let height = 20
+
     let px : float = gameWidth / 2
     let py : float = float(gameHeight - 32)
-    var player = NewPlayer(px, py, 100, "res/plane_1.png")
+    var player = NewPlayer(px, py, 180, "res/plane_1.png")
     level.player = player
 
-    level.map = NewMap(16)
-    level.map.Generate(30, 17, gameWidth, gameHeight)
+    level.map = NewMap(t_size)
+    level.map.Generate(width, height, gameWidth, gameHeight)
 
-    level.mapB = NewMap(16)
-    level.mapB.Generate(30, 17, gameWidth, gameHeight)
+    level.mapB = NewMap(t_size)
+    level.mapB.Generate(width, height, gameWidth, gameHeight)
     level.mapB.position.y = level.map.position.y - (float(level.mapB.height) * float(level.mapB.tile_size))
 
-    level.enemy_spawn_delay = 0.7
+    level.enemy_spawn_delay = 0.8
     level.enemy_spawn_timer = 0f
     return level
