@@ -22,7 +22,7 @@ type Map* = ref object of RootObj
 
 proc NewMap*(tileSize : int) : Map =
     var map = Map()
-    map.speed = 200
+    map.speed = 20
     map.tile_size = tileSize
     map.position = Vector2()
     map.position.x = 0
