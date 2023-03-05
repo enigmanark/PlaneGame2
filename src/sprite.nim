@@ -15,6 +15,17 @@ proc NewSprite*(x : float, y : float, speed : float, path : string) : Sprite =
 
     return sprite
 
+method GetBoundingBox*(self : Sprite) : Rectangle {.base.} =
+    var rect = Rectangle()
+    rect.x = self.position.x
+    rect.y = self.position.y
+    rect.width = float(self.texture.width)
+    rect.height = float(self.texture.height)
+    return rect
+
+method Collides*(self : Sprite, other : Rectangle) : bool {.base.} =
+    return checkCollisionRecs(self.GetBoundingBox(), other)
+
 method Update*(self : Sprite, delta : float) {.base.} =
     discard
 

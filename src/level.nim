@@ -59,6 +59,14 @@ proc Update*(self : var Level, delta : float) =
             e.Clean()
     self.enemies = clean_enemy_seq
 
+    #check bullet collisions with enemies
+    for b in self.player.bullets.items:
+        for e in self.enemies.mitems:
+            let rect = b.GetBoundingBox()
+            if e.Collides(rect):
+                b.alive = false
+                e.alive = false
+
 proc NewLevel*(gameWidth : float, gameHeight : float) : Level =
     randomize()
     var level = Level()

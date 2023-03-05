@@ -13,7 +13,6 @@ proc NewBullet*(x : float, y : float, speed : float, path : string) : Bullet =
     bullet.position.y = y
     bullet.speed = speed
     bullet.texture = loadTexture(path)
-
     return bullet
 
 proc Update*(self : var Bullet, delta : float) =
