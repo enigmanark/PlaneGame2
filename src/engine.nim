@@ -2,6 +2,7 @@ import nimraylib_now
 import player as Player
 import sprite as Sprite
 import map as Map
+import bullet as Bullet
 
 type
     Engine* = object
@@ -63,6 +64,9 @@ proc Update(self : var Engine) =
         self.mapB.position.y = self.map.position.y - (float(self.map.height) * float(self.map.tile_size))
         self.mapB.Generate(self.mapB.width, self.mapB.height, self.gameWidth, self.gameHeight)
 
+    for b in self.player.bullets.mitems:
+        b.Update(delta)
+
 proc Render(self : var Engine) =
     beginDrawing()
     clearBackground(Black)
@@ -70,6 +74,8 @@ proc Render(self : var Engine) =
     beginMode2D(self.camera)
     self.map.Draw()
     self.mapB.Draw()
+    for b in self.player.bullets.items:
+        b.Draw()
     self.player.Draw()
     endMode2D()
 
