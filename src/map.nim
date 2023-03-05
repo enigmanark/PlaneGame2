@@ -10,15 +10,19 @@ let tree2 = TileData(x: 0, y: 1)
 let house1 = TileData(x: 6, y: 0)
 
 type Map* = ref object of RootObj
+    speed* : float
     position* : Vector2
     tileset* : Texture2D
     width* : int
     height* : int
     tile_size* : int
     tiles* : seq[seq[TileData]]
+    gameWidth : float
+    gameHeight : float
 
 proc NewMap*(tileSize : int) : Map =
     var map = Map()
+    map.speed = 200
     map.tile_size = tileSize
     map.position = Vector2()
     map.position.x = 0
@@ -27,11 +31,12 @@ proc NewMap*(tileSize : int) : Map =
 
     return map
 
-proc Generate*(self : Map, width : int, height : int) =
+proc Generate*(self : Map, width : int, height : int, gw : float, gh : float) =
     randomize()
     self.width = width
     self.height = height
-
+    self.gameWidth = gw
+    self.gameHeight = gh
     var matrix : seq[seq[TileData]]
     var row : seq[TileData]
 
@@ -54,11 +59,13 @@ proc Generate*(self : Map, width : int, height : int) =
 
     self.tiles = matrix
 
+proc Update*(self : var Map, delta : float, otherMap : Map) =
+    self.position.y += 1 * self.speed * delta
+
 proc Draw*(self : Map) =
     for i in countup(0, self.width - 1):
         for j in countup(0, self.height - 1):
             var td = self.tiles[i][j]
-
             var src_rect = Rectangle()
             src_rect.x = float(td.x) * float(self.tile_size)
             src_rect.y = float(td.y) * float(self.tile_size)
@@ -66,8 +73,8 @@ proc Draw*(self : Map) =
             src_rect.height = float(self.tile_size)
 
             var dest_rect = Rectangle()
-            dest_rect.x = float(i) * float(self.tile_size)
-            dest_rect.y = float(j) * float(self.tile_size)
+            dest_rect.x = self.position.x + float(i) * float(self.tile_size)
+            dest_rect.y = self.position.y + float(j) * float(self.tile_size)
             dest_rect.width = float(self.tile_size)
             dest_rect.height = float(self.tile_size)
 
