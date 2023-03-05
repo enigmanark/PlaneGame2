@@ -47,7 +47,7 @@ proc Update*(self : var Player, delta : float) =
     if isKeyDown(KeyboardKey.SPACE):
         if self.can_fire:
             self.can_fire = false
-            self.bullets.add(NewBullet(self.position.x, self.position.y, 400, "res/bullet.png"))
+            self.bullets.add(NewBullet(self.position.x + 8, self.position.y, 400, "res/bullet.png"))
 
     var cleaned_bullets : seq[Bullet]
     for b in self.bullets.items:

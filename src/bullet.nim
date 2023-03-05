@@ -19,3 +19,24 @@ proc Update*(self : var Bullet, delta : float) =
     self.position.y -= 1 * self.speed * delta
     if self.position.y <= -30:
         self.alive = false
+
+type EnemyBullet* = ref object of Sprite
+    alive* : bool
+    gameHeight : float
+
+proc NewEnemyBullet*(x : float, y : float, speed : float, path : string, gameHeight : float) : EnemyBullet =
+    var bullet = EnemyBullet()
+    bullet.speed = speed
+    bullet.alive = true
+    bullet.position = Vector2()
+    bullet.position.x = x
+    bullet.position.y = y
+    bullet.speed = speed
+    bullet.texture = loadTexture(path)
+    bullet.gameHeight = gameHeight
+    return bullet
+
+proc Update*(self : var EnemyBullet, delta : float) =
+    self.position.y += 1 * self.speed * delta
+    if self.position.y > self.gameHeight:
+        self.alive = false

@@ -1,5 +1,6 @@
 import nimraylib_now
 import sprite as Sprite
+import bullet as Bullet
 
 type Enemy* = ref object of Sprite
     gameHeight : float
@@ -9,8 +10,10 @@ type Enemy* = ref object of Sprite
     flash_delay : float
     hp : int
     score : int
+    fire_timer : float
+    fire_delay : float
 
-proc NewEnemy*(x : float, y : float, speed : float, path : string, gameHeight : float, hp : int, score : int) : Enemy =
+proc NewEnemy*(x : float, y : float, speed : float, path : string, gameHeight : float, hp : int, score : int, delay : float) : Enemy =
     var enemy = Enemy()
     enemy.speed = speed
     enemy.position = Vector2()
@@ -23,6 +26,8 @@ proc NewEnemy*(x : float, y : float, speed : float, path : string, gameHeight : 
     enemy.flash_delay = 0.1
     enemy.hp = hp
     enemy.score = score
+    enemy.fire_timer = 0f
+    enemy.fire_delay = delay
     return enemy
 
 proc GetScore*(self : Enemy) : int =
@@ -40,7 +45,7 @@ proc TakeDamage*(self : var Enemy) : bool =
 proc Clean*(self : var Enemy) =
     unloadTexture(self.texture)
 
-proc Update*(self : var Enemy, delta : float) =
+proc Update*(self : var Enemy, delta : float, bullets : var seq[EnemyBullet]) =
     if self.flashing:
         self.flash_timer += delta
         if self.flash_timer >= self.flash_delay:
@@ -50,6 +55,12 @@ proc Update*(self : var Enemy, delta : float) =
     self.position.y += 1 * self.speed * delta
     if self.position.y > self.gameHeight:
         self.alive = false
+
+    self.fire_timer += delta
+    if self.fire_timer >= self.fire_delay:
+        self.fire_timer = 0f
+        var bullet = NewEnemyBullet(self.position.x + 8, self.position.y, 150, "res/bullet.png", self.gameHeight)
+        bullets.add(bullet)
 
 method Draw*(self : Enemy) =
     var rect = Rectangle()

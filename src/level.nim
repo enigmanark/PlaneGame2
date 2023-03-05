@@ -15,10 +15,13 @@ type Level* = ref object of RootObj
     enemies : seq[Enemy]
     enemy_spawn_timer : float
     enemy_spawn_delay : float
+    enemyBullets : seq[EnemyBullet]
 
 proc Draw*(self : Level) =
     self.map.Draw()
     self.mapB.Draw()
+    for eb in self.enemyBullets.mitems:
+        eb.Draw()
     for b in self.player.bullets.items:
         b.Draw()
     self.player.Draw()
@@ -42,7 +45,10 @@ proc Update*(self : var Level, delta : float) =
         b.Update(delta)
 
     for e in self.enemies.mitems:
-        e.Update(delta)
+        e.Update(delta, self.enemyBullets)
+
+    for eb in self.enemyBullets.mitems:
+        eb.Update(delta)
 
     self.enemy_spawn_timer += delta
     if self.enemy_spawn_timer >= self.enemy_spawn_delay:
@@ -51,13 +57,13 @@ proc Update*(self : var Level, delta : float) =
         let ex = rand(16..int(self.gameWidth)-16)
         let ey = 0-16
         if et == 1:
-            self.enemies.add(NewEnemy(float(ex), float(ey), 42, "res/plane_2.png", self.gameHeight, 3, 20))
+            self.enemies.add(NewEnemy(float(ex), float(ey), 42, "res/plane_2.png", self.gameHeight, 3, 20, 3.5))
         elif et == 2:
-            self.enemies.add(NewEnemy(float(ex), float(ey), 37, "res/plane_4.png", self.gameHeight, 2, 15))
+            self.enemies.add(NewEnemy(float(ex), float(ey), 37, "res/plane_4.png", self.gameHeight, 2, 15, 3.5))
         elif et == 3:
-            self.enemies.add(NewEnemy(float(ex), float(ey), 55, "res/plane_5.png", self.gameHeight, 1, 30))
+            self.enemies.add(NewEnemy(float(ex), float(ey), 55, "res/plane_5.png", self.gameHeight, 1, 30, 2.5))
         else:
-            self.enemies.add(NewEnemy(float(ex), float(ey), 30, "res/plane_3.png", self.gameHeight, 2, 10))
+            self.enemies.add(NewEnemy(float(ex), float(ey), 30, "res/plane_3.png", self.gameHeight, 2, 10, 2.75))
 
     var clean_enemy_seq : seq[Enemy]
     for e in self.enemies.mitems:
