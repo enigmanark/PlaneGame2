@@ -51,13 +51,13 @@ proc Update*(self : var Level, delta : float) =
         let ex = rand(16..int(self.gameWidth)-16)
         let ey = 0-16
         if et == 1:
-            self.enemies.add(NewEnemy(float(ex), float(ey), 42, "res/plane_2.png", self.gameHeight))
+            self.enemies.add(NewEnemy(float(ex), float(ey), 42, "res/plane_2.png", self.gameHeight, 3))
         elif et == 2:
-            self.enemies.add(NewEnemy(float(ex), float(ey), 37, "res/plane_4.png", self.gameHeight))
+            self.enemies.add(NewEnemy(float(ex), float(ey), 37, "res/plane_4.png", self.gameHeight, 2))
         elif et == 3:
-            self.enemies.add(NewEnemy(float(ex), float(ey), 55, "res/plane_5.png", self.gameHeight))
+            self.enemies.add(NewEnemy(float(ex), float(ey), 55, "res/plane_5.png", self.gameHeight, 1))
         else:
-            self.enemies.add(NewEnemy(float(ex), float(ey), 30, "res/plane_3.png", self.gameHeight))
+            self.enemies.add(NewEnemy(float(ex), float(ey), 30, "res/plane_3.png", self.gameHeight, 2))
 
     var clean_enemy_seq : seq[Enemy]
     for e in self.enemies.mitems:
@@ -73,7 +73,7 @@ proc Update*(self : var Level, delta : float) =
             let rect = b.GetBoundingBox()
             if e.Collides(rect):
                 b.alive = false
-                e.alive = false
+                e.TakeDamage()
 
 proc NewLevel*(gameWidth : float, gameHeight : float) : Level =
     randomize()
