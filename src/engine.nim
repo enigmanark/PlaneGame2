@@ -1,5 +1,8 @@
 import nimraylib_now
-import level as Level
+import state as State
+import state_play as PlayState
+import state_title as TitleState
+import state_gameover as GameOverState
 
 type
     Engine* = object
@@ -10,9 +13,7 @@ type
         screenTitle : string
         camera : Camera2D
         camera_zoom : float
-        level : Level
-        bg_health : Texture2D
-        health_bar : Texture2D
+        currentState : State
 
 proc NewEngine*(ww : int, wh : int, t : string) : Engine =
     var engine = Engine()
@@ -29,58 +30,30 @@ proc NewEngine*(ww : int, wh : int, t : string) : Engine =
 proc Initialize*(self : var Engine) =
     initWindow(self.windowWidth, self.windowHeight, cstring(self.screenTitle))
     setTargetFPS(60)
-    self.level = NewLevel(self.gameWidth, self.gameHeight)
-    self.bg_health = loadTexture("res/health_bar_bg.png")
-    self.health_bar = loadTexture("res/health_bar.png")
+    self.currentState = NewTitleState()
 
 proc ProcessEvents(self : Engine) =
     discard
 
 proc Update(self : var Engine) =
     let delta = getFrameTime()
-    self.level.Update(delta)
-
-proc DrawHealthBar(self : Engine) =
-    let base_scale = 7.0
-    let scale_x = 2.0 * base_scale
-    let scale_y = 0.7 * base_scale
-    let x = 10f
-    let y = 10f
-    var src_rect = Rectangle()
-    src_rect.x = 0
-    src_rect.y = 0
-    src_rect.width = 16
-    src_rect.height = 4
-    var dest_rect = Rectangle()
-    dest_rect.x = x
-    dest_rect.y = y
-    dest_rect.width = 16 * scale_x
-    dest_rect.height = 4 * scale_y
-    drawTexturePro(self.bg_health, src_rect, dest_rect, Vector2(x : 0, y : 0), 0f, White)
-
-    dest_rect.x += 3
-    dest_rect.y += 3
-    dest_rect.width -= 6
-    dest_rect.height -= 6
-
-    dest_rect.width *= self.level.GetPlayerCurrentHealth() / self.level.GetPlayerMaxHealth()
-    drawTexturePro(self.health_bar, src_rect, dest_rect, Vector2(x : 0, y : 0), 0f, White)
+    self.currentState.Update(delta)
+    let message = self.currentState.GetMessage()
+    if message == 1:
+        self.currentState = NewPlayState(self.gameWidth, self.gameHeight)
+    elif message == 2:
+        self.currentState = NewGameOverState()
 
 proc Render(self : Engine) =
     beginDrawing()
     clearBackground(Black)
 
-    beginMode2D(self.camera)
-    self.level.Draw()
-    endMode2D()
+    self.currentState.Draw(self.camera)
 
-    let fps = getFPS()
-    let fpsText : string = $fps
-    drawText(cstring("FPS: " & fpsText), 10, 70, 22, WHITE)
-    let sct = $self.level.GetPlayerSore()
-    drawText(cstring("Score: " & sct), 10, 40, 22, WHITE)
-    self.DrawHealthBar()
     endDrawing()
+
+proc ChangeState*(self : var Engine, st : State) =
+    self.currentState = st
 
 proc Run*(self : var Engine) =
     while not windowShouldClose():
