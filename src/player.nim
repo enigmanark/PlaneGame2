@@ -8,8 +8,8 @@ type Player* = ref object of Sprite
     fire_timer : float
     can_fire : bool
     score : int
-    max_hp : int
-    cur_hp : int
+    max_hp* : int
+    cur_hp* : int
     flashing : bool
     flash_timer : float
     flash_delay : float

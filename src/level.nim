@@ -134,3 +134,9 @@ proc GetPlayerSore*(self : Level) : int =
 
 proc GetPlayerPosition*(self : Level) : Vector2 =
     return self.player.position
+
+proc GetPlayerCurrentHealth*(self : Level) : int =
+    return self.player.cur_hp
+
+proc GetPlayerMaxHealth*(self : Level) : int =
+    return self.player.max_hp
