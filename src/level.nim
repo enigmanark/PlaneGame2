@@ -41,12 +41,15 @@ proc Update*(self : var Level, delta : float) =
         self.mapB.position.y = self.map.position.y - (float(self.map.height) * float(self.map.tile_size))
         self.mapB.Generate(self.mapB.width, self.mapB.height, self.gameWidth, self.gameHeight)
 
+    #update player bullets
     for b in self.player.bullets.mitems:
         b.Update(delta)
 
+    #update enemies
     for e in self.enemies.mitems:
         e.Update(delta, self.enemyBullets)
 
+    #update enemy bullets
     for eb in self.enemyBullets.mitems:
         eb.Update(delta)
 
@@ -65,6 +68,7 @@ proc Update*(self : var Level, delta : float) =
         else:
             self.enemies.add(NewEnemy(float(ex), float(ey), 30, "res/plane_3.png", self.gameHeight, 2, 10, 2.75))
 
+    #cleanup dead enemies
     var clean_enemy_seq : seq[Enemy]
     for e in self.enemies.mitems:
         if e.alive:
@@ -81,6 +85,22 @@ proc Update*(self : var Level, delta : float) =
                 b.alive = false
                 if e.TakeDamage():
                     self.player.AddScore(e.GetScore())
+
+    #check bullet collision with player
+    for eb in self.enemyBullets.mitems:
+        let player_rect = self.player.GetBoundingBox()
+        if eb.Collides(player_rect):
+            eb.alive = false
+            self.player.TakeDamage()
+
+    #cleanup dead enemy bullets
+    var clean_enemy_bullet_seq : seq[EnemyBullet]
+    for eb in self.enemyBullets.mitems:
+        if eb.alive:
+            clean_enemy_bullet_seq.add(eb)
+        else:
+            eb.Clean()
+    self.enemyBullets = clean_enemy_bullet_seq
 
 proc NewLevel*(gameWidth : float, gameHeight : float) : Level =
     randomize()
@@ -111,3 +131,6 @@ proc NewLevel*(gameWidth : float, gameHeight : float) : Level =
 
 proc GetPlayerSore*(self : Level) : int =
     return self.player.GetScore()
+
+proc GetPlayerPosition*(self : Level) : Vector2 =
+    return self.player.position

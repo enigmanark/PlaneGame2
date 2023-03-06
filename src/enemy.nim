@@ -26,7 +26,7 @@ proc NewEnemy*(x : float, y : float, speed : float, path : string, gameHeight : 
     enemy.flash_delay = 0.1
     enemy.hp = hp
     enemy.score = score
-    enemy.fire_timer = 0f
+    enemy.fire_timer = delay / 2
     enemy.fire_delay = delay
     return enemy
 
@@ -41,9 +41,6 @@ proc TakeDamage*(self : var Enemy) : bool =
         return true
     else:
         return false
-
-proc Clean*(self : var Enemy) =
-    unloadTexture(self.texture)
 
 proc Update*(self : var Enemy, delta : float, bullets : var seq[EnemyBullet]) =
     if self.flashing:

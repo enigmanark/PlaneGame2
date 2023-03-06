@@ -15,6 +15,9 @@ proc NewSprite*(x : float, y : float, speed : float, path : string) : Sprite =
 
     return sprite
 
+method Clean*(self : Sprite) {.base.} =
+    unloadTexture(self.texture)
+
 method GetBoundingBox*(self : Sprite) : Rectangle {.base.} =
     var rect = Rectangle()
     rect.x = self.position.x

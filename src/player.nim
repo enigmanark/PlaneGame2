@@ -8,9 +8,16 @@ type Player* = ref object of Sprite
     fire_timer : float
     can_fire : bool
     score : int
+    max_hp : int
+    cur_hp : int
+    flashing : bool
+    flash_timer : float
+    flash_delay : float
 
 proc NewPlayer*(x : float, y : float, speed : float, path : string) : Player =
     var player = Player()
+    player.max_hp = 5
+    player.cur_hp = player.max_hp
     player.speed = 150
     player.position = Vector2()
     player.position.x = x
@@ -21,6 +28,9 @@ proc NewPlayer*(x : float, y : float, speed : float, path : string) : Player =
     player.fire_delay = 0.25
     player.fire_timer = 0f
     player.score = 0
+    player.flashing = false
+    player.flash_delay = 0.1
+    player.flash_timer = 0f
     return player
 
 proc GetScore*(self : Player) : int =
@@ -28,6 +38,10 @@ proc GetScore*(self : Player) : int =
 
 proc AddScore*(self : var Player, sc : int) =
     self.score += sc
+
+proc TakeDamage*(self : var Player) =
+    self.cur_hp -= 1
+    self.flashing = true
 
 proc Update*(self : var Player, delta : float) =
     if not self.can_fire:
@@ -55,4 +69,23 @@ proc Update*(self : var Player, delta : float) =
             cleaned_bullets.add(b)
     self.bullets = cleaned_bullets
 
+    if self.flashing:
+        self.flash_timer += delta
+        if self.flash_timer >= self.flash_delay:
+            self.flash_timer = 0f
+            self.flashing = false
 
+method Draw*(self : Player) =
+    if self.flashing:
+        var rect = Rectangle()
+        rect.x = 0
+        rect.y = 0
+        rect.width = float(self.texture.width)
+        rect.height = -float(self.texture.height)
+        var blend : BlendMode;
+        blend = BlendMode.ADDITIVE
+        beginBlendMode(blend)
+        drawTextureRec(self.texture, rect, self.position, White)
+        endBlendMode()
+    else:
+        drawTexture(self.texture, cint(self.position.x), cint(self.position.y), White)

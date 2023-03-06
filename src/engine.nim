@@ -36,7 +36,7 @@ proc Update(self : var Engine) =
     let delta = getFrameTime()
     self.level.Update(delta)
 
-proc Render(self : var Engine) =
+proc Render(self : Engine) =
     beginDrawing()
     clearBackground(Black)
 
