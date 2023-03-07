@@ -8,6 +8,9 @@ type TileData = ref object of RootObj
 let grass = TileData(x: 2, y: 1)
 let tree2 = TileData(x: 0, y: 1)
 let house1 = TileData(x: 6, y: 0)
+let house2 = TileData(x: 13, y: 1)
+let tree1 = TileData(x: 0, y : 0)
+let tree3 = TileData(x: 14, y : 2)
 
 type Map* = ref object of RootObj
     speed* : float
@@ -52,8 +55,14 @@ proc Generate*(self : Map, width : int, height : int, gw : float, gh : float) =
             let t = rand(1000)
             if t > 990:
                 matrix[i][j] = house1
-            elif t > 900:
+            elif t > 980:
+                matrix[i][j] = house2
+            elif t > 966:
                 matrix[i][j] = tree2
+            elif t > 933:
+                matrix[i][j] = tree1
+            elif t > 900:
+                matrix[i][j] = tree3
             else:
                 matrix[i][j] = grass
 
