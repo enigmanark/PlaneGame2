@@ -149,8 +149,6 @@ proc NewLevel*(gameWidth : float, gameHeight : float) : Level =
 
     level.enemy_spawn_delay = 0.8
     level.enemy_spawn_timer = 0f
-
-    playSound(loadSound("res/track_1.ogg"))
     return level
 
 proc GetPlayerSore*(self : Level) : int =

@@ -32,7 +32,7 @@ proc Initialize*(self : var Engine) =
     initAudioDevice()
     setMasterVolume(0.75)
     setTargetFPS(60)
-    self.currentState = NewTitleState()
+    self.currentState = NewTitleState(float(self.windowWidth), float(self.windowHeight))
 
 proc ProcessEvents(self : Engine) =
     discard
@@ -45,7 +45,8 @@ proc Update(self : var Engine) =
         self.currentState = NewPlayState(self.gameWidth, self.gameHeight)
     elif message == 2:
         var playState : PlayState = cast[PlayState](self.currentState)
-        self.currentState = NewGameOverState(playState.GetPlayerScore())
+        playState.StopMusic()
+        self.currentState = NewGameOverState(playState.GetPlayerScore(), self.windowWidth, self.windowHeight)
 
 proc Render(self : Engine) =
     beginDrawing()

@@ -7,6 +7,7 @@ type PlayState* = ref object of State
         bg_health : Texture2D
         health_bar : Texture2D
         message : int
+        music : Sound
 
 proc NewPlayState*(gameWidth : float, gameHeight : float) : PlayState =
     var play = PlayState()
@@ -14,6 +15,8 @@ proc NewPlayState*(gameWidth : float, gameHeight : float) : PlayState =
     play.bg_health = loadTexture("res/health_bar_bg.png")
     play.health_bar = loadTexture("res/health_bar.png")
     play.message = 0
+    play.music = loadSound("res/track_1.ogg")
+    playSound(play.music)
     return play
 
 method Update*(self : PlayState, delta : float) =
@@ -22,6 +25,9 @@ method Update*(self : PlayState, delta : float) =
     #check player is dead
     if self.level.GetPlayerCurrentHealth() <= 0:
         self.message = 2
+
+proc StopMusic*(self : PlayState) =
+    stopSound(self.music)
 
 proc GetPlayerScore*(self : PlayState) : int =
     return self.level.GetPlayerSore()
