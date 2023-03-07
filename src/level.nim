@@ -5,6 +5,7 @@ import map as Map
 import bullet as Bullet
 import enemy as Enemy
 import std/random
+import explosion as Explosion
 
 type Level* = ref object of RootObj
     gameWidth : float
@@ -16,6 +17,7 @@ type Level* = ref object of RootObj
     enemy_spawn_timer : float
     enemy_spawn_delay : float
     enemyBullets : seq[EnemyBullet]
+    explosions : seq[Explosion]
 
 proc Draw*(self : Level) =
     self.map.Draw()
@@ -27,6 +29,8 @@ proc Draw*(self : Level) =
     self.player.Draw()
     for e in self.enemies.items:
         e.Draw()
+    for ex in self.explosions.items:
+        ex.Draw()
 
 proc Update*(self : var Level, delta : float) =
     self.player.Update(delta)
@@ -53,6 +57,10 @@ proc Update*(self : var Level, delta : float) =
     for eb in self.enemyBullets.mitems:
         eb.Update(delta)
 
+    #update explosions
+    for ex in self.explosions.mitems:
+        ex.Update(delta)
+
     self.enemy_spawn_timer += delta
     if self.enemy_spawn_timer >= self.enemy_spawn_delay:
         self.enemy_spawn_timer = 0f
@@ -78,6 +86,7 @@ proc Update*(self : var Level, delta : float) =
         if e.alive:
             clean_enemy_seq.add(e)
         else:
+            self.explosions.add(NewExplosion(e.position.x, e.position.y))
             e.Clean()
     self.enemies = clean_enemy_seq
 
@@ -106,6 +115,15 @@ proc Update*(self : var Level, delta : float) =
             eb.Clean()
     self.enemyBullets = clean_enemy_bullet_seq
 
+    #cleanup dead explosions
+    var clean_explosions_seq : seq[Explosion]
+    for ex in self.explosions.mitems:
+        if ex.alive:
+            clean_explosions_seq.add(ex)
+        else:
+            ex.Cleanup()
+    self.explosions = clean_explosions_seq
+
 proc NewLevel*(gameWidth : float, gameHeight : float) : Level =
     randomize()
     var level = Level()
@@ -131,6 +149,8 @@ proc NewLevel*(gameWidth : float, gameHeight : float) : Level =
 
     level.enemy_spawn_delay = 0.8
     level.enemy_spawn_timer = 0f
+
+    playSound(loadSound("res/track_1.ogg"))
     return level
 
 proc GetPlayerSore*(self : Level) : int =
