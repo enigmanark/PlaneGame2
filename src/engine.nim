@@ -29,6 +29,8 @@ proc NewEngine*(ww : int, wh : int, t : string) : Engine =
 
 proc Initialize*(self : var Engine) =
     initWindow(self.windowWidth, self.windowHeight, cstring(self.screenTitle))
+    initAudioDevice()
+    setMasterVolume(0.75)
     setTargetFPS(60)
     self.currentState = NewTitleState()
 
@@ -62,3 +64,4 @@ proc Run*(self : var Engine) =
         self.Update()
         self.Render()
     closeWindow()
+    closeAudioDevice()

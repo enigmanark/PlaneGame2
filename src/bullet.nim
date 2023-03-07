@@ -13,6 +13,7 @@ proc NewBullet*(x : float, y : float, speed : float, path : string) : Bullet =
     bullet.position.y = y
     bullet.speed = speed
     bullet.texture = loadTexture(path)
+    playSound(loadSound("res/fire.wav"))
     return bullet
 
 proc Update*(self : var Bullet, delta : float) =
@@ -33,8 +34,17 @@ proc NewEnemyBullet*(x : float, y : float, speed : float, path : string, gameHei
     bullet.position.y = y
     bullet.speed = speed
     bullet.texture = loadTexture(path)
+    playSound(loadSound("res/enemyFire.wav"))
     bullet.gameHeight = gameHeight
     return bullet
+
+method Draw(self : EnemyBullet) =
+    var rect = Rectangle()
+    rect.x = 0
+    rect.y = 0
+    rect.width = float(self.texture.width)
+    rect.height = -float(self.texture.height)
+    drawTextureRec(self.texture, rect, self.position, White)
 
 proc Update*(self : var EnemyBullet, delta : float) =
     self.position.y += 1 * self.speed * delta
