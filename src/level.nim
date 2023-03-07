@@ -56,7 +56,7 @@ proc Update*(self : var Level, delta : float) =
     self.enemy_spawn_timer += delta
     if self.enemy_spawn_timer >= self.enemy_spawn_delay:
         self.enemy_spawn_timer = 0f
-        let et = rand(1..4)
+        let et = rand(1..6)
         let ex = rand(16..int(self.gameWidth)-16)
         let ey = 0-16
         if et == 1:
@@ -65,9 +65,13 @@ proc Update*(self : var Level, delta : float) =
             self.enemies.add(NewEnemy(float(ex), float(ey), 37, "res/plane_4.png", self.gameHeight, 2, 15, 3.5))
         elif et == 3:
             self.enemies.add(NewEnemy(float(ex), float(ey), 55, "res/plane_5.png", self.gameHeight, 1, 30, 2.5))
-        else:
+        elif et == 4:
             self.enemies.add(NewEnemy(float(ex), float(ey), 30, "res/plane_3.png", self.gameHeight, 2, 10, 2.75))
-
+        elif et == 5:
+            self.enemies.add(NewStationaryEnemy(float(ex), float(ey), TURRET1, self.gameHeight, 4, 40, 3.0))
+        else:
+            self.enemies.add(NewStationaryEnemy(float(ex), float(ey), TANK, self.gameHeight, 5, 50, 3.0))
+            
     #cleanup dead enemies
     var clean_enemy_seq : seq[Enemy]
     for e in self.enemies.mitems:

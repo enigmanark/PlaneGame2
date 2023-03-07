@@ -2,6 +2,13 @@ import nimraylib_now
 import sprite as Sprite
 import bullet as Bullet
 
+type EnemyTileData = ref object of RootObj
+    x : float
+    y : float
+
+let TANK* = EnemyTileData( x : 4, y : 1)
+let TURRET1* = EnemyTileData(x : 6, y : 0)
+
 type Enemy* = ref object of Sprite
     gameHeight : float
     alive* : bool
@@ -12,6 +19,8 @@ type Enemy* = ref object of Sprite
     score : int
     fire_timer : float
     fire_delay : float
+    stationary : bool
+    data : EnemyTileData
 
 proc NewEnemy*(x : float, y : float, speed : float, path : string, gameHeight : float, hp : int, score : int, delay : float) : Enemy =
     var enemy = Enemy()
@@ -19,7 +28,6 @@ proc NewEnemy*(x : float, y : float, speed : float, path : string, gameHeight : 
     enemy.position = Vector2()
     enemy.position.x = x
     enemy.position.y = y
-    enemy.speed = speed
     enemy.texture = loadTexture(path)
     enemy.gameHeight = gameHeight
     enemy.alive = true
@@ -28,6 +36,26 @@ proc NewEnemy*(x : float, y : float, speed : float, path : string, gameHeight : 
     enemy.score = score
     enemy.fire_timer = delay / 2
     enemy.fire_delay = delay
+    enemy.data = EnemyTileData()
+    enemy.stationary = false
+    return enemy
+
+proc NewStationaryEnemy*(x : float, y : float, data : EnemyTileData, gameHeight : float, hp : int, score : int, delay : float) : Enemy =
+    var enemy = Enemy()
+    enemy.speed = 20
+    enemy.position = Vector2()
+    enemy.position.x = x
+    enemy.position.y = y
+    enemy.texture = loadTexture("res/tiles_2.png")
+    enemy.gameHeight = gameHeight
+    enemy.alive = true
+    enemy.flash_delay = 0.1
+    enemy.hp = hp
+    enemy.score = score
+    enemy.fire_timer = delay / 2
+    enemy.fire_delay = delay
+    enemy.data = data
+    enemy.stationary = true
     return enemy
 
 proc GetScore*(self : Enemy) : int =
@@ -60,17 +88,38 @@ proc Update*(self : var Enemy, delta : float, bullets : var seq[EnemyBullet]) =
         bullets.add(bullet)
 
 method Draw*(self : Enemy) =
-    var rect = Rectangle()
-    rect.x = 0
-    rect.y = 0
-    rect.width = float(self.texture.width)
-    rect.height = -float(self.texture.height)
-    if self.flashing:
-        var blend : BlendMode;
-        blend = BlendMode.ADDITIVE
-        beginBlendMode(blend)
-        drawTextureRec(self.texture, rect, self.position, White)
-        endBlendMode()
+    if self.stationary:
+        var src_rect = Rectangle()
+        src_rect.x = self.data.x * 16
+        src_rect.y = self.data.y * 16
+        src_rect.width = 16
+        src_rect.height = 16
+        var dest_rect = Rectangle()
+        dest_rect.x = self.position.x
+        dest_rect.y = self.position.y
+        dest_rect.width = 16
+        dest_rect.height = 16
+
+        if self.flashing:
+            var blend : BlendMode;
+            blend = BlendMode.ADDITIVE
+            beginBlendMode(blend)
+            drawTexturePro(self.texture, src_rect, dest_rect, Vector2(x: 0, y : 0), 0f, White)
+            endBlendMode()
+        else:
+            drawTexturePro(self.texture, src_rect, dest_rect, Vector2(x: 0, y : 0), 0f, White)
     else:
-        drawTextureRec(self.texture, rect, self.position, White)
+        var rect = Rectangle()
+        rect.x = 0
+        rect.y = 0
+        rect.width = float(self.texture.width)
+        rect.height = -float(self.texture.height)
+        if self.flashing:
+            var blend : BlendMode;
+            blend = BlendMode.ADDITIVE
+            beginBlendMode(blend)
+            drawTextureRec(self.texture, rect, self.position, White)
+            endBlendMode()
+        else:
+            drawTextureRec(self.texture, rect, self.position, White)
 
