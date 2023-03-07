@@ -84,7 +84,11 @@ proc Update*(self : var Enemy, delta : float, bullets : var seq[EnemyBullet]) =
     self.fire_timer += delta
     if self.fire_timer >= self.fire_delay:
         self.fire_timer = 0f
-        var bullet = NewEnemyBullet(self.position.x + 8, self.position.y, 150, "res/bullet.png", self.gameHeight)
+        var bullet : EnemyBullet
+        if self.stationary:
+            bullet = NewEnemyBullet(self.position.x, self.position.y, 150, "res/bullet.png", self.gameHeight)
+        else:
+            bullet = NewEnemyBullet(self.position.x + 8, self.position.y, 150, "res/bullet.png", self.gameHeight)
         bullets.add(bullet)
 
 method Draw*(self : Enemy) =

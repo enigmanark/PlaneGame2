@@ -71,7 +71,7 @@ proc Update*(self : var Level, delta : float) =
             self.enemies.add(NewStationaryEnemy(float(ex), float(ey), TURRET1, self.gameHeight, 4, 40, 3.0))
         else:
             self.enemies.add(NewStationaryEnemy(float(ex), float(ey), TANK, self.gameHeight, 5, 50, 3.0))
-            
+
     #cleanup dead enemies
     var clean_enemy_seq : seq[Enemy]
     for e in self.enemies.mitems:
@@ -119,7 +119,7 @@ proc NewLevel*(gameWidth : float, gameHeight : float) : Level =
 
     let px : float = gameWidth / 2
     let py : float = float(gameHeight - 32)
-    var player = NewPlayer(px, py, 180, "res/plane_1.png")
+    var player = NewPlayer(px, py, 180, "res/plane_1.png", gameWidth)
     level.player = player
 
     level.map = NewMap(t_size)

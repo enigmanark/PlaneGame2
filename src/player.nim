@@ -13,9 +13,11 @@ type Player* = ref object of Sprite
     flashing : bool
     flash_timer : float
     flash_delay : float
+    gameWidth : float
 
-proc NewPlayer*(x : float, y : float, speed : float, path : string) : Player =
+proc NewPlayer*(x : float, y : float, speed : float, path : string, gameWidth : float) : Player =
     var player = Player()
+    player.gameWidth = gameWidth
     player.max_hp = 5
     player.cur_hp = player.max_hp
     player.speed = 150
@@ -74,6 +76,12 @@ proc Update*(self : var Player, delta : float) =
         if self.flash_timer >= self.flash_delay:
             self.flash_timer = 0f
             self.flashing = false
+
+    #clamp
+    if self.position.x < 0:
+        self.position.x = 0
+    elif self.position.x + float(32) > self.gameWidth:
+        self.position.x = self.gameWidth - 32
 
 method Draw*(self : Player) =
     if self.flashing:
