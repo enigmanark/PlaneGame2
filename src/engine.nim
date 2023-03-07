@@ -42,7 +42,8 @@ proc Update(self : var Engine) =
     if message == 1:
         self.currentState = NewPlayState(self.gameWidth, self.gameHeight)
     elif message == 2:
-        self.currentState = NewGameOverState()
+        var playState : PlayState = cast[PlayState](self.currentState)
+        self.currentState = NewGameOverState(playState.GetPlayerScore())
 
 proc Render(self : Engine) =
     beginDrawing()

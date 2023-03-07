@@ -23,6 +23,9 @@ method Update*(self : PlayState, delta : float) =
     if self.level.GetPlayerCurrentHealth() <= 0:
         self.message = 2
 
+proc GetPlayerScore*(self : PlayState) : int =
+    return self.level.GetPlayerSore()
+
 proc DrawHealthBar(self : PlayState) =
     let base_scale = 7.0
     let scale_x = 2.0 * base_scale
