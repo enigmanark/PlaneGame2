@@ -3,7 +3,7 @@
 version       = "0.1.0"
 author        = "Enigmanark"
 description   = "A new awesome nimble package"
-license       = "Proprietary"
+license       = "MIT"
 srcDir        = "src"
 bin           = @["planegame_2"]
 
